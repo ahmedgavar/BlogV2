@@ -118,8 +118,8 @@
             </div>
         </div>
     </div>
+    @include('posts.create')
 
-@include('posts.create')
 @include('posts.delete')
     
 @include('posts.edit')

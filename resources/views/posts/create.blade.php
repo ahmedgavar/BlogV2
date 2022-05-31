@@ -42,7 +42,6 @@
         @error('image_name') <span class="error text-danger">{{ $message }}</span> @enderror
 
       </div>
-      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Save</button>
@@ -52,6 +51,7 @@
     </div>
   </div>
 </div>
+
 @if (count($errors) > 0)
     <script>
         $( document ).ready(function() {
