@@ -35,17 +35,7 @@ class StorePostRequest extends FormRequest
             'content'=>[
                     'required',
                     'min:20'],
-
-            'image_name' => [
-                'required',
-                'image',
-                'mimes:jpg,png,jpeg,gif,svg',
-                'max:2048'
-            ],
-
-
-
-
+                   
             //
         ];
         return $rules;
@@ -63,14 +53,18 @@ class StorePostRequest extends FormRequest
 
             'content.required'=>"يجب ادخال محتوي",
             'content.min'=>"المقال قصير جدا",
+            'images.required'=>"يجب اختبار صورة معبرة",
+            'images.max'=>"اختر صورة أقل حجما"
 
-            'image_name.required'=>"يجب اختبار صورة معبرة",
-            'image_name.max'=>"اختر صورة أقل حجما",
-
-            
-
-            
         ];
+
+
+            // 'image_name.required'=>"يجب اختبار صورة معبرة",
+            // 'image_name.max'=>"اختر صورة أقل حجما"
+
+            
+
+            
 
     }
 }

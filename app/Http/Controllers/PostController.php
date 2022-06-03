@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\PostImages;
 use Illuminate\Http\Request;
@@ -10,130 +11,121 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
+use Image as Image;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
+
     public function store(StorePostRequest $request)
     {
-      
-        // name folder name and file name to store them
-        if ($request->image_name) {
-            // get image from form
+        $validatedData = $request->validated();
 
-            $image=$request->image_name;
-            $time=Carbon::now();
-            
-            $directory=date_format($time, 'Y').'/'.date_format($time, 'm');
-            $file_name=date_format($time, 'h').'/'.date_format($time, 's').'.'.$image->extension();
-            Storage::disk('posts_images')->putFileAs($directory, $image, $file_name);
+        $time=Carbon::now();
+        // name of image using slug and 
+        $slug=SlugService::createSlug(Post::class, 'slug', $request->title);
 
-            $slug=SlugService::createSlug(Post::class, 'slug', $request->title);
-            $validatedData = $request->validated();
+        //1 name folder name and file name to store them
+                // get image from form html
+        if ($request->hasFile('images')) {
+            // 1 save table of posts
             $post_store=Post::create(
-                Arr::except($validatedData+['slug'=>$slug],['image_name'])
-                
-                // user id addeed in boot function in post model when creating
-                
+                Arr::except($validatedData+['slug'=>$slug], ['image_name'])
+         
+         // user id added in boot function in post model when creating
+            );
+            // number of images
+            $total_images = count($request->file('images'));
+
+
+            foreach ($request->images as $image) {
+                $origin_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
+
             
-            );
-            // store images for post
+                // images names
+                $file_name = $slug.rand(1, 500).'.'.$image->extension();
 
-            PostImages::create([
-                'post_id'=>$post_store->id,
-                'image_name'=>$directory.'/'.$file_name
-                ,
-            ]
-            );
-            session()->flash('status','Your post has created successfully ');
+               
+                // path of folders
+                $origin_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
+                // store original image
+                Storage::disk('posts_images')->putFileAs($origin_path, $image, $file_name);
+        
+                // store resized image
+                $original_Image = Image::make($image->getRealPath());
+                $original_Image->resize(250, 150);
+                // create directory because image intervention not create folder
+        
+                if (!File::isDirectory(public_path().'/assets/posts_images_thumbs/'.$origin_path)) {
+                    File::makeDirectory(public_path().'/assets/posts_images_thumbs/'.$origin_path, 0777, true, true);
+                }
+                $original_Image->save(public_path('assets/posts_images_thumbs/').$origin_path.'/'.$file_name, 100);
+        
+                // store images for post
+                ;
+
+                PostImages::create(
+                    [
+                    'post_id'=>$post_store->id,
+                    'image_name'=>$origin_path.'/'. $file_name ,
+                    ]
+                );
+            }
+            session()->flash('status', 'Your post has created successfully with '.$total_images.' image');
+        
             return redirect('/');
-
         }
+        
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
     public function show(Post $post)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($post)
     {
         //
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
+    
+    public function update(UpdatePostRequest $request)
     {
         //
-        $post=Post::findOrFail($request->postId);
 
+        $post=Post::findOrFail($request->postId);
 
         $slug=SlugService::createSlug(Post::class, 'slug', $request->title_edit);
 
-        $post->update([
-            'title'=>$request->title_edit,
-            'content'=>$request->content_edit,
+        $post_update=$post->update([
+            'title'=>$request->validated()[ 'title_edit'],
+            'content'=>$request->validated()[ 'content_edit'],
             'slug'=>$slug,
             
         ]);
-        session()->flash('status','Your post has updated successfully ');
-            return redirect('/');
-
         
-    
-    
+        session()->flash('status','Your pos successfully ');
+        return redirect('/');
+
+       
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
+  
     public function destroy(Request $request)
     {
         //
@@ -152,3 +144,6 @@ class PostController extends Controller
         
     }
 }
+
+
+

@@ -2,19 +2,20 @@
 
 @section('content')
 
+<link href="{{ asset('posts-styles/home-style.css') }}" rel="stylesheet">
+
 <!-- show success message when creating post -->
 @if (session('status'))
-    <div class="alert alert-success">
+    <div class="alert alert-success" id="success_create_update_msg">
         {{ session('status') }}
     </div>
 @endif
 @if (session('delete'))
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" id="success_delete_msg">
         {{ session('delete') }}
     </div>
 @endif
 <!-- End show success message when creating post -->
-<link href="{{ asset('posts-styles/home-style.css') }}" rel="stylesheet">
 
 
 <div class="container">
@@ -24,22 +25,26 @@
                 <div class="card-header">
                     {{ __('Latest Posts') }}
 
-                    <button type="button" id="create_post_link" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">create Post</button>
+                    <button
+                        type="button" 
+                        id="create_post_link" 
+                        class="btn btn-primary crud_action"
+                         data-bs-toggle="modal" 
+                         data-bs-target="#createPostModal"
+                         data-action="create"
+                         >create Post
+
+                    </button>
+                   
                     
                 </div>
 
                 <div class="card-body">
 
-                <!-- Start  show my posts -->
-                
-                        @foreach ($posts as $post)
-                            @empty($post)
-                            <strong>No posts Found</strong>
-
-                            @endempty
+                    <!-- Start  show my posts -->
+            
+                    @forelse ($posts as $post)
                         
-                            @isset($post)
-
                             <div class="container post_card">
                                 @if($loop->even)
 
@@ -60,77 +65,77 @@
                                     </div>
                                 @endif
                             </div>
-                                @auth 
-                                <div  id="post_info">
-                                    <span class="badge bg-secondary">{{$post->created_at->diffForHumans()}}</span>
-                                    <span class="badge bg-info">{{$post->user->name}}</span>
-                                    <span id="comment">comment</span>
-                                    <span>
-                                        <a class="btn btn-primary btn-sm" href="{{route('posts.show',$post->id)}}" >View</a>
-                                        <button
+                            @auth 
+                             <div  id="post_info">
+                                <span class="badge bg-secondary">{{$post->created_at->diffForHumans()}}</span>
+                                <span class="badge bg-info">{{$post->user->name}}</span>
+                                <span id="comment">comment</span>
+                                <span>
+                                    <a class="btn btn-primary btn-sm" href="{{route('posts.show',$post->id)}}" >View</a>
+                                    <button
                                             
-                                            data-bs-toggle="modal"
-                                            class="btn btn-primary btn-sm"
-                                            data-bs-target="#editPostModal"
-                                            data-id="{{$post->id}}"
-
-                                            data-title="{{$post->title}}"
-                                            data-content="{{$post->content}}"
+                                        data-bs-toggle="modal"
+                                        class="btn btn-primary btn-sm crud_action"
+                                        data-bs-target="#editPostModal"
+                                        data-id="{{$post->id}}"
+                                        data-action="update"
+                                        data-title="{{$post->title}}"
+                                        data-content="{{$post->content}}"
 
                                             >Edit
-                                        </button>
-                                        <button
-                                            class="btn btn-danger btn-sm deleteBtn" 
-                                            style="margin: 0px;"
-                                            data-bs-toggle="modal"
+                                    </button>
+                                    <button
+                                        class="btn btn-danger btn-sm deleteBtn crud_action" 
+                                        style="margin: 0px;"
+                                        data-bs-toggle="modal"
 
-                                            data-bs-target="#deleteModal"
+                                        data-bs-target="#deleteModal"
+                                        data-action="delete"
+                                        data-delete_id="{{$post->id}}"
 
-                                            data-delete_id="{{$post->id}}"
 
-  
-                                            >Delete
-                                        </button>
-                                    </span>
+                                        >Delete
+                                    </button>
+                                </span>
                         
-                                </div>
-                                @endauth
-                                @guest
+                              </div>
+                            @endauth
+                            @guest
                                 <div  id="post_info">
-                                    
                                     <button class="btn btn-primary btn-sm">View</button>
                                         
-                        
                                 </div>
-                                @endguest
+                            @endguest
 
-                    @endisset
-
+                        @empty
+                            not posts yet
+                    @endforelse
                     
-                                
-                        @endforeach
                     
-                        <!-- End  show my posts -->
-
-
+                    <!-- End  show my posts -->
                     
                 </div>
+
+               
+                    
             </div>
+            
         </div>
     </div>
-    @include('posts.create')
-
-@include('posts.delete')
-    
-@include('posts.edit')
-
-
-
-
+</div>
+@include('posts.create')
 
 @stop
-
-@section('modals_js')
+@section('modal_js')
+    
 <script src="{{asset('js/modal_data.js')}}"></script>
 
+
 @stop
+
+
+
+    
+
+
+

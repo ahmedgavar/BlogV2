@@ -25,3 +25,22 @@
     column-gap: 50px;
 
 }
+/* style flash message */
+#success_create_update_msg,#success_delete_msg{
+    text-align: center;
+    width: 450px;
+    margin: auto;
+
+
+}
+
+/* style modals */
+
+/* Important part */
+.modal-dialog{
+    overflow-y: initial !important
+}
+.my_large_model{
+    height: 80vh;
+    overflow-y: auto;
+}
