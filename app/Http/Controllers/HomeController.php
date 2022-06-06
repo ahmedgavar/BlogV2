@@ -24,8 +24,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $posts=Post::with(['user','comments','post_image'])->orderBy('id','desc')->get();
-        
+        $posts=Post::with('post_Images')->orderBy('id','desc')->get();
+
         return view('home',['posts'=>$posts]);
     }
 }

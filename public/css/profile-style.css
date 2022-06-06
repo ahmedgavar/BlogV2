@@ -1,0 +1,67 @@
+/* link above */
+.profile_link {
+    color: black;
+    font-size: large;
+    text-decoration: none;
+}
+
+.profile_link h4{
+    color: black;
+    margin-top: 10px;
+}
+
+/* profile image
+ */
+#profile_image
+ {
+    width: 150px;
+    height: 150px;
+    float: left;
+    border-radius: 50%;
+    margin-right: 25px;
+ }
+
+ #profile_owner{
+margin-top: 50px;
+ }
+/* profile edit page */
+#form_title{
+text-align: center;
+}
+ .one_row{
+
+    display: flex;
+    flex-direction: row;
+ }
+
+ .one_row>div{
+     margin-left: 50px;
+ }
+ .all_form{
+     margin-top: 100px;
+ }
+input{
+    width: 350px;
+    height: 50px;
+}
+textarea{
+    margin-top: 30px;
+    vertical-align: middle;
+}
+#textarea_{
+    margin-left: 100px;
+    margin-bottom: 30px;
+}
+
+#text_area_label{
+text-align: center;}
+
+.custom-file{
+    margin-top: 20px;
+    margin-left: 100px;
+}
+#update_profile_btn
+{
+
+margin-left: 300px;
+}

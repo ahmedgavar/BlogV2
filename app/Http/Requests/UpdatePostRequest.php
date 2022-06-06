@@ -36,12 +36,12 @@ class UpdatePostRequest extends FormRequest
                     'required',
                     'min:20'],
 
-            'image_name_edit' => [
-                'required',
-                'image',
-                'mimes:jpg,png,jpeg,gif,svg',
-                'max:2048'
-            ],
+            // 'image_name_edit' => [
+            //     'required',
+            //     'image',
+            //     'mimes:jpg,png,jpeg,gif,svg',
+            //     'max:2048'
+            // ],
 
 
 
@@ -64,8 +64,8 @@ class UpdatePostRequest extends FormRequest
             'content_edit.required'=>"يجب ادخال محتوي",
             'content_edit.min'=>"المقال قصير جدا",
 
-            'image_name_edit.required'=>"يجب اختبار صورة معبرة",
-            'image_name_edit.max'=>"اختر صورة أقل حجما",
+            // 'image_name_edit.required'=>"يجب اختبار صورة معبرة",
+            // 'image_name_edit.max'=>"اختر صورة أقل حجما",
 
             
 

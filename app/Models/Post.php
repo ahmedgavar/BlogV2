@@ -15,7 +15,7 @@ class Post extends Model
     use SoftDeletes;
     use Sluggable;
     protected $guarded = [];
-        
+
     protected $dates=['deleted_at'];
 
     public function user(){
@@ -26,8 +26,8 @@ class Post extends Model
     {
         return $this->hasMany(Comment::class);
     }
-    public function post_image(){
-        return $this->belongsTo(Post::class,'post_id');
+    public function post_Images(){
+        return $this->hasMany(PostImages::class,'post_id');
     }
     public function sluggable():array{
         return [
@@ -46,7 +46,7 @@ class Post extends Model
         static::updating(function ($model) {
             $model->user_id = Auth::id();
         });
-        
+
     }
 
 

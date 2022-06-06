@@ -1,10 +1,11 @@
 $(document).ready(function() {
 
 // first task change picture show
-    // Multiple images preview with JavaScript
+
+
+            // Multiple images preview with JavaScript
 
     $(function() {
-        // Multiple images preview with JavaScript
         var multiImgPreview = function(input, imgPreviewPlaceholder) {
             if (input.files) {
                 var filesAmount = input.files.length;
@@ -18,23 +19,38 @@ $(document).ready(function() {
             }
         };
 
-// End first task change picture show
-    //end  Multiple images preview with JavaScript
-
+            //end  Multiple images preview with JavaScript
+            // call this function for create modal
 
         $('#image_name').on('change', function() {
             multiImgPreview(this, 'div.imgPreview');
+            // End call this function for create modal
+
         });
-        });  
+            //  call this function for edit modal
+
+        $('#images_edit').on('change', function() {
+            multiImgPreview(this, 'div.imgEditPreview');
+            // End call this function for edit modal
+
+        });
+
+    });
+
+// End first task change picture show
+
+
     $('#deleteModal').on('show.bs.modal',function(event){
         var button=$(event.relatedTarget);
-        
+
         var postDeleteId=button.data('delete_id');
-    
+
        $('#delete_name').val(postDeleteId);
-        
-    
+
+
         } );
+
+
     $('#editPostModal').on('show.bs.modal',function(event){
     var button=$(event.relatedTarget);
     var title=button.data('title');
@@ -44,7 +60,7 @@ $(document).ready(function() {
     $('#title_edit').val(title);
     $('#content_edit').val(content);
     $('#postId').val(postEditId);
-    
+
 
     });
     // show flash message on create and update
@@ -56,6 +72,6 @@ $(document).ready(function() {
      setTimeout(function(){
         $('#success_delete_msg').hide();// or fade, css display however you'd like.
      }, 5000);
-     
-   
+
+
 });
