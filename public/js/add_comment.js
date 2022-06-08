@@ -1,69 +1,93 @@
 //    fetch data in div called show comments
-$('.show_comments').on('click',function(e){
+$(document).ready(function()
+{
 
-    const post_id=e.target.id;
-    // alert(post_id);
-    get_post_comments(post_id);
+        // 1 show post comments
 
-    });
+    $('.show_comments').on('click',function(e)
+    {
+        const post_id=e.target.id;
+        // split the post id from div id
+        let post_number = post_id.slice(13);
+        get_post_comments(post_number);
+
+        });
+
+
+        //2 show form for save comment
+        $('.show_comment_form').on('click',function(e){
+            const post_id=e.target.id;
+            let post_number = post_id.slice(17);
+
+            $('#div_comment_form'+post_number).toggle();
+
+        });
+
+
+        // 3 save comment to database
+        $('.add_comment').on('submit',function(e){
+
+            e.preventDefault();
+            const post_id=$(this).attr('data-postId');
+
+
+            $.ajaxSetup({
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                }
+            });
 
 
 
+            $.ajax({
 
-    // save comment to database
-    $('.add_comment_buttons').on('submit',function(e){
-        
-        e.preventDefault();
-        const post_id=$(this).attr('data-postId');
-        const user_id=$(this).attr('data-userId');
-        const save_button=$('#add_comment_btn'+post_id);
-        save_button.html('saving  <i class="fas fa-spinner fa-spin"></i>');
-       
-        
-         $.ajaxSetup({
-            headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-            }
-          });
-          
-        
-        
-        $.ajax({
-            
-            method: 'POST',
-            
-            url: '/comments/'+ user_id+'/'+post_id,
-            data:{
-                'comment_body':$('.comment_body').val()
-            },
-            dataType:'json',
-              
-            success:  (response)=> {
+                method: 'POST',
 
-                if(response.status=="success"){
+                url: '/comments',
+                data:{
+                    'comment':$('#comment_input'+post_id).val(),
+                    'post_id':post_id
+                },
+                dataType:'json',
+
+                success:  (response)=> {
+                    $('#comment_input'+post_id).val('');
+                    // show success message for 5 seconds
                     $('#success_message'+post_id).removeClass('visually-hidden');
-                    $('.comments_body').val("");
-                    save_button.html('save');
+                    setTimeout(function(){
+                        $('#success_message'+post_id).hide();// or fade, css display however you'd like.
+                     }, 5000);
+
+                     get_post_comments(post_id);
+
+
+                    if(response.status=="success")
+                    {
+
+
+                    }
+
 
                 }
-                
-    
-            }
-        , error: function (reject) {
+            , error: function (reject) {
+                console.log(reject);
 
-            if (reject.status===422){
-                save_button.html('save');
-                $('#success_message'+post_id).addClass('visually-hidden');
+                if (reject.status===422){
+                    // save_button.html('save');
+                    $('#success_message'+post_id).addClass('visually-hidden');
+                    // show error message for 5 seconds
+                    const message= reject.responseJSON?reject.responseJSON.errors? reject.responseJSON.errors.comment?reject.responseJSON.errors.comment[0]:'':'':'';
 
-                const message= reject.responseJSON?reject.responseJSON.errors? reject.responseJSON.errors.comment_body?reject.responseJSON.errors.comment_body[0]:'':'':'';
+                    $('#comment_error'+post_id).text(message);
+                    setTimeout(function(){
+                        $('#comment_error'+post_id).hide();// or fade, css display however you'd like.
+                     }, 5000);
 
-                $('#comment_error'+post_id).text(message);
 
-              
-            }
-            }
-        });
-       
+                }
+                }
+            });
+
 
 
 
@@ -74,29 +98,29 @@ $('.show_comments').on('click',function(e){
 
 // function to get data
 
-function get_post_comments(post_id){
+function get_post_comments(comment){
 
 $.ajax({
     method: 'GET',
     enctype: 'multipart/form-data',
-    url: '/comments/'+post_id,
+    url: '/comments/'+comment,
     success:  (response)=> {
 
-        $('#post_comments'+post_id).html(response);
-        $('#post_comments'+post_id).toggle();
+        $('#post_comments'+comment).html(response);
+        $('#post_comments'+comment).toggle();
 
 
-        
+
 
     }
 , error: function (error) {
-        alert('some thing else occured');
+        // alert('some thing else occured');
     }
 });
 
 //   End function to get data
 
-
-
-
 }
+
+});
+

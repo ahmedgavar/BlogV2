@@ -24,8 +24,7 @@ class ProfileController extends Controller
     {
         //
         $user=Auth::user();
-        $posts=Post::get();
-        // dd($posts);
+        $posts=Post::with(['post_images','comments'])->where('user_id',$user->id)->get();
 
         return view('profiles.index',['user'=>$user,'posts'=>$posts]);
     }

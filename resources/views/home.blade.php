@@ -67,7 +67,7 @@
                                 @if($loop->even)
 
 
-                                    <div class="card posts_div" style="background-color: #f77f7a;">
+                                    <div class="card posts_div" style="background-color: #f77f7a;margin-top: 20px">
                                         <div class="card-body">
                                             <h5 class="card-title">{{$post->title}}</h5>
                                             <p class="card-text">{{Str::limit ($post->content,180)}}</p>
@@ -87,7 +87,7 @@
                              <div  id="post_info">
                                 <span class="badge bg-secondary">{{$post->created_at->diffForHumans()}}</span>
                                 <span class="badge bg-info">{{$post->user->name}}</span>
-                                <span id="comment">comment</span>
+                                <span class="show_comment_form" id="show_comment_form{{ $post->id }}" style="cursor: pointer;">comment</span>
                                 <span>
                                     <a class="btn btn-primary btn-sm" href="{{route('posts.show',$post->slug)}}" >View</a>
                                     <button
@@ -115,6 +115,49 @@
                                 </span>
 
                               </div>
+
+
+                                {{-- add comment --}}
+
+                                {{-- success message --}}
+
+                                <div class="alert alert-success visually-hidden" id="success_message{{$post->id}}">
+                                    Comment saved successfully
+                                </div>
+
+                                {{-- End success message --}}
+
+                                <h4 id="show_comment_{{ $post->id }}" class="show_comments"
+                                    style="padding: 20px 10px;cursor: pointer;">Comments
+                                </h4>
+                                <div id="post_comments{{$post->id}}">
+
+                                   {{-- here all comments are shown --}}
+
+                                </div>
+
+                                <div  id="div_comment_form{{ $post->id }}" style="display: none">
+
+                                    <form  class="add_comment" method="POST"
+                                        data-postId="{{$post->id}}">
+                                        @csrf
+                                        <div style="margin-left: 50px">
+
+                                            <textarea style="text-align: center" name="comment" id="comment_input{{ $post->id }}" cols="60" rows="3" placeholder="add your comment"></textarea>
+                                            <button  style="margin: 20px 150px" type="submit" id="add_comment_btn{{$post->id}}">save</button>
+                                            <div id="comment_error{{$post->id}}" class="text-danger"></div>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+
+
+
+                            {{-- End form for adding comment --}}
+
+                                {{-- End add comment --}}
+
                             @endauth
                             @guest
                                 <div  id="post_info">
@@ -133,23 +176,21 @@
 
                 </div>
 
+                @include('posts.create')
 
                 @include('posts.delete')
                 @include('posts.edit')
-                @include('posts.create')
 
             </div>
 
 
 
-
-        </div>
-   <!-- End  show my posts -->
-
-
-
     </div>
+                    {{-- End  show my posts --}}
 
+
+
+</div>
 
 
 @endsection
@@ -157,6 +198,8 @@
 
 @section('modal_js')
 <script src="{{asset('js/modal_data.js')}}"></script>
+<script src="{{asset('js/add_comment.js')}}"></script>
+
 @endsection
 
 
