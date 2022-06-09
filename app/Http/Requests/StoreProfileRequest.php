@@ -28,14 +28,14 @@ class StoreProfileRequest extends FormRequest
             'first_name'=>[
                     'required',
                     'string',
-                    'min:8',
+                    'min:2',
                     'max:20',
 
                 ],
 
             'last_name'=>[
                     'required',
-                    'min:8',
+                    'min:2',
                     'max:20',
 
                 ],

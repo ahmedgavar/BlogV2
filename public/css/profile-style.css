@@ -1,3 +1,5 @@
+
+/* --------------------------1 profile page---------------- */
 /* link above */
 .profile_link {
     color: black;
@@ -24,7 +26,68 @@
  #profile_owner{
 margin-top: 50px;
  }
-/* profile edit page */
+.profile_success{
+    width: 60%;
+    height: 100px;
+    text-align: center;
+    margin:auto;
+
+}
+
+#post_title{
+    text-align: center;
+
+}
+#post_info_div,#comment_info_div{
+    margin-top: 20px;
+    text-align: center;
+
+}
+#post_time,#post_owner{
+    color: red;
+}
+#comment_time,#comment_owner{
+    color: blueviolet;
+}
+
+.post_div{
+    border-radius: 5px;
+    margin-top: 40px;
+    border: 2px solid #145;
+}
+.comments_div{
+width: 70%;
+margin: auto;
+margin-top: 20px;
+
+
+}
+
+/*  post images */
+/* Three image containers (use 25% for four, and 50% for two, etc) */
+
+
+
+  /* image gallary */
+  .gallery-item{
+	max-width: 100%;
+}
+.gallery{
+	background-color: #dbddf1;
+	padding: 80px 0;
+}
+.gallery img{
+	background-color: #ffffff;
+	padding: 15px;
+	width: 100%;
+	box-shadow: 0 0 15px rgba(0,0,0,0.3);
+	cursor: pointer;
+}
+#gallery-modal .modal-img{
+	width: 100%;
+}
+
+/* --------------------------2 profile  Edit page---------------- */
 #form_title{
 text-align: center;
 }

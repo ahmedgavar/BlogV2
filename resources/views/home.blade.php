@@ -67,7 +67,7 @@
                                 @if($loop->even)
 
 
-                                    <div class="card posts_div" style="background-color: #f77f7a;margin-top: 20px">
+                                    <div class="card posts_div" style="background-color: #f77f7a;margin: 20px 0px">
                                         <div class="card-body">
                                             <h5 class="card-title">{{$post->title}}</h5>
                                             <p class="card-text">{{Str::limit ($post->content,180)}}</p>
@@ -83,7 +83,10 @@
                                     </div>
                                 @endif
                             </div>
+                            {{-- show actions(delete and edit for the owner of post) --}}
                             @auth
+                            @if ($post->user->id===auth::user()->id)
+
                              <div  id="post_info">
                                 <span class="badge bg-secondary">{{$post->created_at->diffForHumans()}}</span>
                                 <span class="badge bg-info">{{$post->user->name}}</span>
@@ -157,11 +160,23 @@
                             {{-- End form for adding comment --}}
 
                                 {{-- End add comment --}}
+                            @endif
+
 
                             @endauth
+
                             @guest
                                 <div  id="post_info">
-                                    <button class="btn btn-primary btn-sm">View</button>
+                                    <a class="btn btn-primary btn-sm">View</a>
+                                    <h4 id="show_comment_{{ $post->id }}" class="show_comments"
+                                        style="padding: 20px 10px;cursor: pointer;">Comments
+                                    </h4>
+
+                                </div>
+
+                                <div id="post_comments{{$post->id}}">
+
+                                   {{-- here all comments are shown --}}
 
                                 </div>
                             @endguest
