@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Conner\Likeable\Like;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Qirolab\Laravel\Reactions\Traits\Reacts;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Qirolab\Laravel\Reactions\Contracts\ReactsInterface;
 
-class User extends Authenticatable
+class User extends Authenticatable implements ReactsInterface
 {
-    use HasApiTokens, HasFactory, Notifiable;
+
+    use HasApiTokens, HasFactory, Notifiable ,Reacts;
 
     /**
      * The attributes that are mass assignable.
@@ -45,5 +49,13 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class)->withDefault();
+    }
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 }

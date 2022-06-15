@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
@@ -24,18 +25,19 @@ class StorePostRequest extends FormRequest
     public function rules()
     {
         $rules= [
+
             'title'=>[
                     'required',
                     'string',
                     'min:10',
                     'max:20',
-
+                    Rule::unique('posts', 'title')
                 ],
 
             'content'=>[
                     'required',
                     'min:20'],
-                   
+
             //
         ];
         return $rules;
@@ -44,12 +46,14 @@ class StorePostRequest extends FormRequest
 
     public function messages()
     {
-        
+
         return [
             'title.required'=>"أدخل عنوان المقال ",
             'title.min'=>"عنوان المقال قصير جدا ",
             'title.max'=>"عنوان المقال طويل جدا",
             'title.string'=>"عنوان المقال  غير مناسب",
+            'title.unique'=>" هذا العنوان مكرر    ",
+
 
             'content.required'=>"يجب ادخال محتوي",
             'content.min'=>"المقال قصير جدا",
@@ -62,9 +66,9 @@ class StorePostRequest extends FormRequest
             // 'image_name.required'=>"يجب اختبار صورة معبرة",
             // 'image_name.max'=>"اختر صورة أقل حجما"
 
-            
 
-            
+
+
 
     }
 }

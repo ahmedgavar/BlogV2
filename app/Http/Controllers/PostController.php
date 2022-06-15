@@ -2,31 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use Carbon\Carbon;
+use Image as Image;
+use App\Models\Like;
 use App\Models\Post;
 use App\Models\PostImages;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Image as Image;
+use App\Http\Requests\StorePostRequest;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdatePostRequest;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class PostController extends Controller
 {
+        // reactions
 
-    public function index()
-    {
-        //
+     public function toggle_react(Post $post,Request $request)
+     {
+        
+
+        $post->toggleReaction('like');
     }
 
 
-    public function create()
-    {
-        //
-    }
+
 
 
 
@@ -41,14 +44,17 @@ class PostController extends Controller
         //1 name folder name and file name to store them
                 // get image from form html
         if ($request->hasFile('images')) {
+
+
+        DB::transaction(function () use($slug,$validatedData,$request,$time) {
+
+
             // 1 save table of posts
             $post_store=Post::create(
-                Arr::except($validatedData+['slug'=>$slug], ['image_name'])
+                Arr::except($validatedData+['slug'=>$slug], ['images'=>'image_name'])
 
          // user id added in boot function in post model when creating
             );
-            // number of images
-            $total_images = count($request->file('images'));
 
 
             foreach ($request->images as $image) {
@@ -84,9 +90,15 @@ class PostController extends Controller
                     ]
                 );
             }
+        });
+            // number of images
+            $total_images = count($request->file('images'));
+
+
             session()->flash('status', 'Your post has created successfully with '.$total_images.' image');
 
             return redirect('/');
+
         }
 
     }

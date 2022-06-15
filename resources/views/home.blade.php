@@ -34,7 +34,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
                     {{ __('Latest Posts') }}
@@ -67,7 +67,7 @@
                                 @if($loop->even)
 
 
-                                    <div class="card posts_div" style="background-color: #f77f7a;margin: 20px 0px">
+                                    <div class="card posts_div card text-white bg-primary" style="margin: 20px 0px">
                                         <div class="card-body">
                                             <h5 class="card-title">{{$post->title}}</h5>
                                             <p class="card-text">{{Str::limit ($post->content,180)}}</p>
@@ -75,7 +75,7 @@
                                     </div>
 
                                 @else
-                                    <div class="card posts_div" style="background-color: #8b4;">
+                                    <div class="card posts_divcard text-white bg-secondary">
                                         <div class="card-body">
                                              <h5 class="card-title">{{$post->title}}</h5>
                                              <p class="card-text">{{Str::limit ($post->content,180)}}</p>
@@ -83,16 +83,49 @@
                                     </div>
                                 @endif
                             </div>
-                            {{-- show actions(delete and edit for the owner of post) --}}
-                            @auth
-                            @if ($post->user->id===auth::user()->id)
+             {{-- show actions(delete and edit for the owner of post) --}}
+
 
                              <div  id="post_info">
-                                <span class="badge bg-secondary">{{$post->created_at->diffForHumans()}}</span>
-                                <span class="badge bg-info">{{$post->user->name}}</span>
-                                <span class="show_comment_form" id="show_comment_form{{ $post->id }}" style="cursor: pointer;">comment</span>
+                                {{-- 1   for all people permision [A :show owner of post
+                                                                B :show time of creating post
+                                                                c: view post
+                                                                ]
+                                 --}}
+                                <span class="badge bg-secondary">{{$post->created_at->diffForHumans()}}
+                                </span>
+                                <span class="badge bg-info">{{$post->user->name}}
+                                </span>
                                 <span>
                                     <a class="btn btn-primary btn-sm" href="{{route('posts.show',$post->slug)}}" >View</a>
+                                </span>
+                                {{-- 2 for authinticated user [A : add comment
+                                                                B: show comments
+                                                                C: like
+                                                                 ]
+                                --}}
+                            @auth
+
+
+                                <span class="show_comment_form" id="show_comment_form{{ $post->id }}"
+                                    style="cursor: pointer;">comment
+                                </span>
+
+
+                                <span id="show_comment_{{ $post->id }}" class="show_comments"
+                                        style="cursor: pointer;">Comments
+                                </span>
+
+
+
+
+
+                                    {{-- 3 authenticated and authorized [A: edit and delete] --}}
+
+                             @if ($post->user->id===auth::user()->id)
+                                <span>
+
+
                                     <button
 
                                         data-bs-toggle="modal"
@@ -104,6 +137,10 @@
 
                                             >Edit
                                     </button>
+                                </span>
+                                <span>
+
+
                                     <button
                                         class="btn btn-danger btn-sm deleteBtn crud_action"
                                         style="margin: 0px;"
@@ -116,11 +153,32 @@
                                         >Delete
                                     </button>
                                 </span>
+                            @endif
+                            <span>
 
-                              </div>
+
+                                <post-like-component
+                                  @auth
+
+                                :post_id="{{$post->id}}"
+                                :summary='@json($post->reactionSummary())'
+                                :reacted='@json($post->reacted())'
+
+                                @endauth
+
+                                >
+
+                                </post-like-component>
+                          </span>
+                          
 
 
-                                {{-- add comment --}}
+
+                            @endauth
+
+                        </div>
+
+
 
                                 {{-- success message --}}
 
@@ -130,14 +188,13 @@
 
                                 {{-- End success message --}}
 
-                                <h4 id="show_comment_{{ $post->id }}" class="show_comments"
-                                    style="padding: 20px 10px;cursor: pointer;">Comments
-                                </h4>
+
                                 <div id="post_comments{{$post->id}}">
 
                                    {{-- here all comments are shown --}}
 
                                 </div>
+                                    {{-- form for add comment --}}
 
                                 <div  id="div_comment_form{{ $post->id }}" style="display: none">
 
@@ -160,26 +217,8 @@
                             {{-- End form for adding comment --}}
 
                                 {{-- End add comment --}}
-                            @endif
 
 
-                            @endauth
-
-                            @guest
-                                <div  id="post_info">
-                                    <a class="btn btn-primary btn-sm">View</a>
-                                    <h4 id="show_comment_{{ $post->id }}" class="show_comments"
-                                        style="padding: 20px 10px;cursor: pointer;">Comments
-                                    </h4>
-
-                                </div>
-
-                                <div id="post_comments{{$post->id}}">
-
-                                   {{-- here all comments are shown --}}
-
-                                </div>
-                            @endguest
 
 
 
@@ -214,6 +253,8 @@
 @section('modal_js')
 <script src="{{asset('js/modal_data.js')}}"></script>
 <script src="{{asset('js/add_comment.js')}}"></script>
+{{-- <script src="{{asset('js/likes.js')}}"></script> --}}
+
 
 @endsection
 

@@ -2,6 +2,7 @@
 @section('content')
 
 
+
         <div class="title" style="text-align: center;margin: 50px 0px;">
 
             <h1 style="color: red">{{ $post->title }}</h1>

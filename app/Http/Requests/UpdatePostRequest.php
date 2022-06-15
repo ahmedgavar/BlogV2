@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePostRequest extends FormRequest
@@ -29,6 +30,8 @@ class UpdatePostRequest extends FormRequest
                     'string',
                     'min:10',
                     'max:20',
+                    Rule::unique('posts','title')->ignore($this->post)
+
 
                 ],
 
@@ -54,7 +57,7 @@ class UpdatePostRequest extends FormRequest
 
     public function messages()
     {
-        
+
         return [
             'title_edit.required'=>"أدخل عنوان المقال ",
             'title_edit.min'=>"عنوان المقال قصير جدا ",
@@ -67,9 +70,9 @@ class UpdatePostRequest extends FormRequest
             // 'image_name_edit.required'=>"يجب اختبار صورة معبرة",
             // 'image_name_edit.max'=>"اختر صورة أقل حجما",
 
-            
 
-            
+
+
         ];
 
     }

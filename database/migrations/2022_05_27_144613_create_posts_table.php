@@ -15,10 +15,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
-            
+
             $table->id();
             $table->string('slug')->unique();
-            $table->string('title');
+            $table->string('title')->unique();
             $table->longText('content');
             // foreign key
             $table->foreignIdFor(User::class)->constrained('users')->onUpdate('cascade')->onDelete('cascade');

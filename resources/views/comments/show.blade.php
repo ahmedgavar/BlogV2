@@ -1,5 +1,4 @@
 
-{{-- <div id="post_comments{{$post->id}}" style="display: none;" > --}}
 
 <div class="container" >
 
@@ -20,6 +19,21 @@
 
 
         </div>
+        <div>
+            <comment-like-component
+            @auth
+
+                :comment_id="{{$comment->id}}"
+                :summary='@json($comment->reactionSummary())'
+                :reacted='@json($comment->reacted())'
+
+                @endauth
+
+
+
+            >
+            </comment-like-component>
+        </div>
     @empty
     <div class="bg-warning p-4">
         No comments yet for this post
@@ -27,6 +41,8 @@
 
 
 
+
     @endforelse
+
 {{-- </div> --}}
 </div>

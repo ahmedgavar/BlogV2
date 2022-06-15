@@ -15,6 +15,15 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
+    public function toggle_react(Comment $comment,Request $request)
+    {
+
+
+       $comment->toggleReaction('like');
+   }
+
     public function index()
     {
         //
@@ -56,14 +65,15 @@ class CommentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\int  $comment
+     * @param  \App\Models\int  $post_id
      * @return \Illuminate\Http\Response
      */
-    public function show($comment)
+    public function show($post_id)
     {
+        // get all comments of post using relation
+        $post = Post::with('comments')->orderBy('id','desc')->find($post_id);
 
-        $comments=Comment::where('post_id',$comment)->orderBy('id','desc')->get();
-        return view('comments.show',['comments'=>$comments]);
+        return view('comments.show',['comments'=>$post->comments]);
     }
 
     /**
