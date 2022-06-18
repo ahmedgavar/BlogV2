@@ -9,7 +9,9 @@ $(document).ready(function()
         const post_id=e.target.id;
         // split the post id from div id
         let post_number = post_id.slice(13);
-        get_post_comments(post_number);
+        // get_post_comments(post_number);
+        $('#post_comments'+post_number).toggle();
+
 
         });
 

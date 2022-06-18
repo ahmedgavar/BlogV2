@@ -17,15 +17,30 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdatePostRequest;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 
+use function PHPSTORM_META\type;
+
 class PostController extends Controller
 {
         // reactions
 
      public function toggle_react(Post $post,Request $request)
      {
-        
+        // $types=['like','love','haha','wow','sad','angry'];
+        // ();
+        $post->toggleReaction($request->reaction);
 
-        $post->toggleReaction('like');
+
+        // dd($request->all());
+        // foreach ((array) $request->types as $type) {
+        //     // ...
+        //     $post->toggleReaction($type);
+        //     }
+
+        // foreach ($request->types as $type){
+        //     $post->toggleReaction($type);
+        // }
+
+
     }
 
 

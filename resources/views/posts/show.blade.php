@@ -46,6 +46,8 @@
                     <div class="card" style="width: 70%; margin: 50px">
                         <div class="card-body" >
                             {{ $comments->comment }}
+                            {{ $comments->id }}
+                            
 
                         </div>
 

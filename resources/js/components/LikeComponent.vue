@@ -1,9 +1,22 @@
+
+ <!--
+
+    1_ reaction summary :function called in blade return object like :
+        (love:1) so i use key and value to loop
+
+ -->
 <template>
 <div>
 
 
     <div class="mt-3 d-flex">
+         <!--
+            show number of reaction next to image of reaction
+            v-show="count":means show reaction and count if there is at least one
+
+             -->
         <div
+
              class="px-1" v-for="(count,reaction) in reaction_Summary"
               :key="reaction"
               v-show="count"
@@ -43,6 +56,9 @@
 
                  class="mr-2 btn btn-sm btn-outline-primary d-inline font-weight-bold"
                 >
+                <!--
+                    span show reaction that i choose it
+                -->
                     <span v-if="auth_reaction">
                         <img :src="Image(auth_reaction)" class="w-25">
                         {{ auth_reaction }}
@@ -63,7 +79,7 @@
 import axios from 'axios'
 
     export default {
-        props:['summary','reacted','post_id'],
+        props:['summary','reacted','reactable_type'],
         data(){
             return{
                 show_reactions_types:false,
@@ -73,20 +89,28 @@ import axios from 'axios'
             }
         },
         methods:
+    //    show images
         {
             Image(type){
             return `/assets/reactions/reactions_${type}.png`
 
         },
+        // save reaction
         toggle_reaction(reaction){
 
 
-            let path=window.location.href+'posts/'+this.post_id+'/reaction';
+            let path=window.location.href+this.reactable_type+'/reaction';
             let old_reaction=this.auth_reaction;
 
-            axios.post(`${path}`,{reaction}).catch(()=>{
+            axios.post(`${path}`,{reaction})
+                .then(function (response)
+                 {
+                        console.log(response);
+                 })
+                 .catch((error)=>{
 
-            this.save_reaction(old_reaction,reaction);
+                         console.log(error);
+                        this.save_reaction(old_reaction,reaction);
 
 
             });
@@ -113,6 +137,7 @@ import axios from 'axios'
 
 
         },
+        // if i reacted before,remove this reaction and add new reaction
         resetReactionSummary(new_reaction,old_reaction){
 
             if(old_reaction){

@@ -63,7 +63,7 @@
 
                     @forelse ($posts as $post)
 
-                            <div class="container post_card">
+                            <div class="container post_card" style="margin-top: 30px">
                                 @if($loop->even)
 
 
@@ -113,7 +113,7 @@
 
 
                                 <span id="show_comment_{{ $post->id }}" class="show_comments"
-                                        style="cursor: pointer;">Comments
+                                        style="cursor: pointer;">{{ $post->comments_count }}Comments
                                 </span>
 
 
@@ -157,10 +157,10 @@
                             <span>
 
 
-                                <post-like-component
+                                <like-component
                                   @auth
 
-                                :post_id="{{$post->id}}"
+                                :reactable_type=`posts/{{$post->id}}`
                                 :summary='@json($post->reactionSummary())'
                                 :reacted='@json($post->reacted())'
 
@@ -168,9 +168,8 @@
 
                                 >
 
-                                </post-like-component>
+                                </like-component>
                           </span>
-                          
 
 
 
@@ -189,9 +188,50 @@
                                 {{-- End success message --}}
 
 
-                                <div id="post_comments{{$post->id}}">
+                                <div id="post_comments{{$post->id}}" style="display: none">
 
                                    {{-- here all comments are shown --}}
+                                   @forelse ($post->comments as $comment )
+                                    <div class="card"
+                                    style="margin-top: 50px">
+                                        <div class="card-body"
+                                            >
+                                            {{ $comment->comment }}
+                                            <br>
+                                            <br>
+                                        </div>
+                                    </div>
+
+                                    <span>
+
+
+                                        <like-component
+                                          @auth
+
+                                        :reactable_type=`comments/{{$comment->id}}`
+                                        :summary='@json($comment->reactionSummary())'
+                                        :reacted='@json($comment->reacted())'
+
+                                        @endauth
+
+                                        >
+
+                                        </like-component>
+                                  </span>
+                                  @empty
+                                  <div class="bg-warning p-4">
+                                      No comments yet for this post
+                                  </div>
+
+
+
+
+
+                                   @endforelse
+
+
+
+
 
                                 </div>
                                     {{-- form for add comment --}}

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Qirolab\Laravel\Reactions\Traits\Reactable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Qirolab\Laravel\Reactions\Contracts\ReactableInterface;
 
-class Comment extends Model
+class Comment extends Model implements ReactableInterface
 {
-    use HasFactory;
+    use HasFactory,Reactable;
 
 protected $guarded=['id'];
 
@@ -19,4 +21,5 @@ public function post()
 {
     return $this->belongsTo(Post::class);
 }
+
 }

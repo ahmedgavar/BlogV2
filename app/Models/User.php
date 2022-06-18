@@ -6,15 +6,16 @@ use Conner\Likeable\Like;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Qirolab\Laravel\Reactions\Traits\Reacts;
-use Symfony\Component\HttpKernel\Profiler\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Qirolab\Laravel\Reactions\Contracts\ReactsInterface;
+use Cog\Contracts\Love\Reacterable\Models\Reacterable as ReacterableInterface;
+use Cog\Laravel\Love\Reacterable\Models\Traits\Reacterable;
 
-class User extends Authenticatable implements ReactsInterface
+class User extends Authenticatable implements ReactsInterface, ReacterableInterface
 {
 
-    use HasApiTokens, HasFactory, Notifiable ,Reacts;
+    use HasApiTokens, HasFactory, Notifiable ,Reacts,Reacterable;
 
     /**
      * The attributes that are mass assignable.

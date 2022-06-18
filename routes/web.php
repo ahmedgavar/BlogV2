@@ -26,7 +26,8 @@ Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::post('/posts/{post}/reaction',[PostController::class,'toggle_react']);
-Route::post('/comments/{comment}/reaction',[PostController::class,'toggle_react']);
+Route::post('/comments/{comment}/reaction',[CommentController::class,'toggle_react']);
+
 
 
 Route::resource('/posts',PostController::class);

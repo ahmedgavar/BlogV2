@@ -21,7 +21,7 @@ class CommentController extends Controller
     {
 
 
-       $comment->toggleReaction('like');
+       $comment->toggleReaction($request->reaction);
    }
 
     public function index()
