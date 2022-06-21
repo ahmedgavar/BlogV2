@@ -41,6 +41,13 @@ $(document).ready(function() {
 
 
     $('#deleteModal').on('show.bs.modal',function(event){
+        $('#editPostModal').hide();
+        $('#createPostModal').hide();
+
+
+        $(this).appendTo("body");
+
+
         var button=$(event.relatedTarget);
 
         var postDeleteId=button.data('delete_id');
@@ -52,14 +59,30 @@ $(document).ready(function() {
 
 
     $('#editPostModal').on('show.bs.modal',function(event){
-    var button=$(event.relatedTarget);
-    var title=button.data('title');
-    var content=button.data('content');
-    var postEditId=button.data('id');
 
-    $('#title_edit').val(title);
-    $('#content_edit').val(content);
-    $('#postId').val(postEditId);
+        $('#deletePostModal').hide();
+        $('#createPostModal').hide();
+
+        // this following line solved problem gray background when opening modal
+        $(this).appendTo("body");
+        //  End solve gray background when opening modal
+
+        var button=$(event.relatedTarget);
+        var title=button.data('title');
+        var content=button.data('content');
+        var postEditId=button.data('id');
+
+        $('#title_edit').val(title);
+        $('#content_edit').val(content);
+        $('#postId').val(postEditId);
+
+
+    });
+    $('#createPostModal').on('show.bs.modal',function(event){
+
+        $('#deletePostModal').hide();
+        $('#editPostModal').hide();
+
 
 
     });

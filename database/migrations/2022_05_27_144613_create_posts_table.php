@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
 
             $table->id();
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->string('title')->unique();
             $table->longText('content');
             // foreign key

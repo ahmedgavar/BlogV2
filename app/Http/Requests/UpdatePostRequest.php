@@ -30,7 +30,6 @@ class UpdatePostRequest extends FormRequest
                     'string',
                     'min:10',
                     'max:20',
-                    Rule::unique('posts','title')->ignore($this->post)
 
 
                 ],
@@ -39,12 +38,15 @@ class UpdatePostRequest extends FormRequest
                     'required',
                     'min:20'],
 
-            // 'image_name_edit' => [
-            //     'required',
-            //     'image',
-            //     'mimes:jpg,png,jpeg,gif,svg',
-            //     'max:2048'
-            // ],
+
+            'images_for_edit' =>['required'],
+
+            'images_for_edit.*' => [
+
+                'image',
+                'mimes:jpg,png,jpeg,gif,svg',
+                'max:2048'
+            ],
 
 
 
@@ -67,8 +69,8 @@ class UpdatePostRequest extends FormRequest
             'content_edit.required'=>"يجب ادخال محتوي",
             'content_edit.min'=>"المقال قصير جدا",
 
-            // 'image_name_edit.required'=>"يجب اختبار صورة معبرة",
-            // 'image_name_edit.max'=>"اختر صورة أقل حجما",
+            'images_for_edit.required'=>"يجب اختبار صورة معبرة",
+            'images_for_edit.max'=>"اختر صورة أقل حجما",
 
 
 

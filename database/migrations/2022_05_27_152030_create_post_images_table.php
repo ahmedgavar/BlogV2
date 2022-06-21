@@ -17,7 +17,11 @@ return new class extends Migration
         Schema::create('post_images', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Post::class)->constrained('posts')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('image_path')->nullable();
             $table->string('image_name')->nullable();
+            $table->string('image_extension')->nullable();
+
+
 
 
 

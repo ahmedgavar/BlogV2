@@ -28,15 +28,24 @@ class StorePostRequest extends FormRequest
 
             'title'=>[
                     'required',
+                    'unique:posts,title',
                     'string',
                     'min:10',
                     'max:20',
-                    Rule::unique('posts', 'title')
+
                 ],
+
 
             'content'=>[
                     'required',
                     'min:20'],
+
+                    'images' => 'required',
+                    'images.*' =>
+                                [
+                                    'image',
+                                    'mimes:jpeg,png,jpg,gif,svg|max:2048'
+                                ]
 
             //
         ];

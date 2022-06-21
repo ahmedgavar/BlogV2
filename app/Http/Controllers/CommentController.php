@@ -94,9 +94,18 @@ class CommentController extends Controller
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comment $comment)
+    public function update(Request $request)
     {
         //
+          //
+
+          $request->validate(['comment_edit'=>'required'],['comment_edit.required'=>'comment cannot be empty']);
+
+        $comment=Comment::find($request->comment_id);
+        $comment->update([
+            'comment'=>$request->comment_edit
+        ]);
+        return $comment;
     }
 
     /**

@@ -4,117 +4,137 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Image as Image;
-use App\Models\Like;
 use App\Models\Post;
 use App\Models\PostImages;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use App\Http\Requests\StorePostRequest;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\UpdatePostRequest;
-use Cviebrock\EloquentSluggable\Services\SlugService;
 
-use function PHPSTORM_META\type;
+use App\Http\Requests\UpdatePostRequest;
 
 class PostController extends Controller
 {
-        // reactions
+        // save post reaction
 
      public function toggle_react(Post $post,Request $request)
      {
-        // $types=['like','love','haha','wow','sad','angry'];
-        // ();
+
         $post->toggleReaction($request->reaction);
 
-
-        // dd($request->all());
-        // foreach ((array) $request->types as $type) {
-        //     // ...
-        //     $post->toggleReaction($type);
-        //     }
-
-        // foreach ($request->types as $type){
-        //     $post->toggleReaction($type);
-        // }
 
 
     }
 
-
-
-
-
-
+    // create new post with oe or more images
     public function store(StorePostRequest $request)
     {
-        $validatedData = $request->validated();
+        // 1 start prepare folder for original images and resized images
 
         $time=Carbon::now();
-        // name of image using slug and
-        $slug=SlugService::createSlug(Post::class, 'slug', $request->title);
+        // name of image using slug
+        $title=trim($request->title);
+        $slug=Str::of($request->title)->slug('-');
+        // folder of images if not existed
+        $new_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
 
-        //1 name folder name and file name to store them
-                // get image from form html
-        if ($request->hasFile('images')) {
+        $original_global_path=public_path().'/assets/posts_images/';
+        $original_full_path=$original_global_path.$new_path;
+
+        $resized_global_path=public_path().'/assets/posts_images_thumbs/';
+        $resized_full_path=$resized_global_path.$new_path;
+
+        if (!File::isDirectory($resized_full_path))
+
+        {
+
+            File::makeDirectory($resized_full_path, 0777, true, true);
+         }
+         if (!File::isDirectory($original_full_path))
+
+         {
+
+             File::makeDirectory($original_full_path, 0777, true, true);
+          }
+
+        // 1 End  prepare folder for original images and resized images
 
 
-        DB::transaction(function () use($slug,$validatedData,$request,$time) {
 
 
-            // 1 save table of posts
-            $post_store=Post::create(
-                Arr::except($validatedData+['slug'=>$slug], ['images'=>'image_name'])
+        if ($request->hasFile('images'))
 
-         // user id added in boot function in post model when creating
-            );
+        {
 
+            // to ensure saving data in 2 tables
+            DB::transaction(function () use ($slug,$title, $request,$new_path,$resized_full_path, $time)
 
-            foreach ($request->images as $image) {
-                $origin_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
+            {
 
 
-                // images names
-                $file_name = $slug.rand(1, 500).'.'.$image->extension();
+                // 1 save table of posts
+                $post_data = Arr::except($request->all(), ['images','title']);
+                $post_store=Post::create
+                (
+                 // user id added in boot function in post model when creating
 
+                    $post_data+['slug'=>$slug,'title'=>$title]
 
-                // path of folders
-                $origin_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
-                // store original image
-                Storage::disk('posts_images')->putFileAs($origin_path, $image, $file_name);
-
-                // store resized image
-                $original_Image = Image::make($image->getRealPath());
-                $original_Image->resize(250, 150);
-                // create directory because image intervention not create folder
-
-                if (!File::isDirectory(public_path().'/assets/posts_images_thumbs/'.$origin_path)) {
-                    File::makeDirectory(public_path().'/assets/posts_images_thumbs/'.$origin_path, 0777, true, true);
-                }
-                $original_Image->save(public_path('assets/posts_images_thumbs/').$origin_path.'/'.$file_name, 100);
-
-                // store images for post
-                ;
-
-                PostImages::create(
-                    [
-                    'post_id'=>$post_store->id,
-                    'image_name'=>$origin_path.'/'. $file_name ,
-                    ]
                 );
-            }
-        });
+
+                // 2 save table of post_images
+
+
+                foreach ($request->images as $image)
+                {
+                    // A_ path of image folders according post date and name
+                    // B_ images names
+                    $file_name = $slug.rand(1, 500);
+                    $file_extension=$image->extension();
+
+                    // C_ store original image
+                    Storage::disk('posts_images')->putFileAs($new_path, $image, $file_name.'.'.$file_extension);
+
+                    // D_ store resized image
+                    $original_Image = Image::make($image->getRealPath());
+                    $original_Image->resize(250, 150);
+
+
+
+                    $original_Image->save($resized_full_path.'/'.$file_name .'.'.$file_extension, 100);
+
+                    // 3 store images for post with relation
+
+                    $post_store->post_Images()->create(
+                        [
+                            'image_path'=>$new_path,
+
+                            'image_name'=>$file_name,
+                            'image_extension'=>$file_extension,
+
+                        ]
+
+                    );
+                }
+
+
+            });
+
             // number of images
-            $total_images = count($request->file('images'));
 
 
-            session()->flash('status', 'Your post has created successfully with '.$total_images.' image');
+        }
+        $total_images = count($request->file('images'));
+
+            session()->flash('create_status', 'Your post has created successfully with '.$total_images.' image');
 
             return redirect('/');
 
-        }
+
 
     }
     /**
@@ -134,129 +154,227 @@ class PostController extends Controller
 
     public function edit($post)
     {
-        //
+
+        // i edit modal using data-bs-target
 
     }
 
 
     public function update(UpdatePostRequest $request)
     {
-        //
-        $validatedData = $request->validated();
+
+
+        $post=Post::find($request->postId);
+        // if you changed title or content or images
+
         $time=Carbon::now();
-        $slug=SlugService::createSlug(Post::class, 'slug', $validatedData['title_edit']);
-
-        // delete old images from database
-
-        $post=Post::with('post_Images')->find($request->postId);
-        foreach ($post->post_Images as $old_images) {
-            # code...
-            $old_images->Delete();
-        }
-        // End delete old images from database
-        // delete old images from directory
-// path of folders
-        $origin_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
-        if( $post->title!=$request->validated()[ 'title_edit']){
-
-        Storage::deleteDirectory($post->slug);
+        $title=trim($request->title_edit);
 
 
-        }
+        // slug
+        $slug=Str::of($request->title_edit)->slug('-');
+
+        $new_path=date_format($time, 'Y').'/'.date_format($time, 'm');
+        $origin_path=public_path(). '/assets/posts_images/';
+        $resized_path=public_path(). '/assets/posts_images_thumbs/';
+
+        //  1 case : if title not changes
+        if($title==$post->title)
+        {
+
+            DB::transaction(function () use ($slug,$title, $request, $time,$post,$new_path,$resized_path,$origin_path)
+            {
+                $post->post_Images()->delete();
+
+                // 1 delete  old folder for images
+                $org_path=$origin_path.$slug.'/'.$post->created_at->year;
+                $path_existed=File::isDirectory($org_path);
+
+                if ($path_existed) {
+                    File::deleteDirectory($org_path);
 
 
-        //1 name folder name and file name to store them
-                // get image from form html
-        if ($request->hasFile('images_for_edit')) {
 
-            // update post table
-         // user id added in boot function in post model when updating
+                }
+                // 1 delete  old folder for resiced images
+                $resiz_path=$resized_path.$slug.'/'.$post->created_at->year;
+                $path_existed=File::isDirectory($resiz_path);
 
-            $post_update=$post->update([
-                'title'=>$request->validated()[ 'title_edit'],
-                'content'=>$request->validated()[ 'content_edit'],
+                if ($path_existed) {
+                    File::deleteDirectory($resiz_path);
+
+
+
+                }
+
+
+
+                //  3 update post table
+                $post_update=$post->update([
+                'content'=>$request->content_edit,
                 'slug'=>$slug,
 
-            ]);
-            // delete old folder
+                ]);
+                // 4 save new images in database and folder
+                foreach ($request->images_for_edit as $image) {
+                    // A_ path of image folders according post date and name
+                    $origin_path=$slug.'/'.$new_path;
+                    // B_ images names
+                    $file_name = $slug.rand(1, 500);
+                    $file_extension=$image->extension();
+
+                    // C_ store original image
+                    Storage::disk('posts_images')->putFileAs($origin_path, $image, $file_name.'.'.$file_extension);
+
+                    // D_ store resized image
+                    $original_Image = Image::make($image->getRealPath());
+                    $original_Image->resize(250, 150);
+                    // create directory because image intervention not create folder
+
+                    if (!File::isDirectory($resized_path.$origin_path)) {
+                        File::makeDirectory($resized_path.$origin_path, 0777, true, true);
+                    }
+                    $original_Image->save($resized_path.$origin_path.'/'.$file_name.'.'.$file_extension, 100);
+
+                    // // store images for post with relation
+
+                    $post->post_Images()->create(
+                        [
+                        'image_path'=>$origin_path,
+                        'image_name'=>$file_name,
+                        'image_extension'=>$file_extension,
+
+
+                    ]
+                    );
+                }
+
+            });
+
+        }
+
+        // case 2 title changes
+    else
+    {
+        $resized_path=public_path().'/assets/posts_images_thumbs/';
+
+        DB::transaction(function () use ($slug,$title, $request, $time,$post,$resized_path)
+        {
+            // 2 delete original images from folder
+            $origin_images_path=public_path(). '/assets/posts_images/'.$post->slug;
+            $path_existed=File::isDirectory($origin_images_path);
+
+            if ($path_existed) {
+                File::deleteDirectory($origin_images_path);
+            }
+
+            // 2 delete resized images from folder
+            $resized_images_path=public_path(). '/assets/posts_images_thumbs/'.$post->slug;
+            $path_existed=File::isDirectory($resized_images_path);
+
+            if ($path_existed) {
+                File::deleteDirectory($resized_images_path);
+            }
 
 
 
+            $post->post_Images()->delete();
+
+            $post_update=$post->update([
+                'title'=>$title,
+                'content'=>$request->content_edit,
+                'slug'=>$slug,
+
+                ]);
 
 
-            // number of images
-            $total_images = count($request->file('images_for_edit'));
 
-
+            // 4 save new images in database and folder
             foreach ($request->images_for_edit as $image) {
-                // $origin_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
+                // store images for post with relation
 
 
-                // images names
-                $file_name = $slug.rand(1, 500).'.'.$image->extension();
+                // A_ path of image folders according post date and name
+                $new_path=$slug.'/'.date_format($time, 'Y').'/'.date_format($time, 'm');
+                // B_ images names
+                $file_name = $slug.rand(1, 500);
+                $file_extension=$image->extension();
+                $post->post_Images()->create(
+                    [
+                    'image_path'=>$new_path,
+                    'image_name'=>$file_name,
+                    'image_extension'=>$file_extension,
 
 
+                ]
+                );
 
-                // store original image
-                Storage::disk('posts_images')->putFileAs($origin_path, $image, $file_name);
 
-                // store resized image
+                // C_ store original image
+                Storage::disk('posts_images')->putFileAs($new_path, $image, $file_name.'.'.$file_extension);
+
+                // D_ store resized image
                 $original_Image = Image::make($image->getRealPath());
                 $original_Image->resize(250, 150);
                 // create directory because image intervention not create folder
 
-                if (!File::isDirectory(public_path().'/assets/posts_images_thumbs/'.$origin_path) && $post->title==$request->validated()[ 'title_edit']) {
-                    File::makeDirectory(public_path().'/assets/posts_images_thumbs/'.$origin_path, 0777, true, true);
+                if (!File::isDirectory($resized_path.$new_path))
+                {
+                    File::makeDirectory($resized_path.$new_path, 0777, true, true);
                 }
-                $original_Image->save(public_path('assets/posts_images_thumbs/').$origin_path.'/'.$file_name, 100);
+                $original_Image->save($resized_path.$new_path.'/'.$file_name.'.'.$file_extension, 100);
 
-                // store images for post
-                ;
 
-                PostImages::updateOrCreate(
-                    [
-                    'post_id'=>$post->id,
-                    'image_name'=>$origin_path.'/'. $file_name ,
-                    ]
-                );
             }
-            session()->flash('status', 'Your post has created successfully with '.$total_images.' image');
 
-            return redirect('/');
-
-        }
-        else{
-        $slug=SlugService::createSlug(Post::class, 'slug', $validatedData['title_edit']);
-
-            $post_update=$post->updateOrCreate([
-                'title'=>$request->validated()[ 'title_edit'],
-                'content'=>$request->validated()[ 'content_edit'],
-                'slug'=>$slug,
-
-            ]);
-            session()->flash('status', 'Your post has created successfully with 0 image');
-
-            return redirect('/');
-        }
-
-
+        });
 
 
 
     }
 
 
+            $total_images =count($request->file('images_for_edit'));
+            session()->flash('update_status', 'Your post has updated successfully with '.$total_images.' image');
+            return redirect('/');
+
+
+}
+
+
+
+
+
+
     public function destroy(Request $request)
     {
         //
         // return $request;
-        // delete using soft deleted
+        // delete using force deleted
         $post_id=$request->delete_name;
         $post=Post::find($post_id);
 
-        $post_delete=$post->Delete();
+
+        // delete folder of origin images
+        $origin_images_path=public_path(). '/assets/posts_images/'.$post->slug;
+        $path_existed=File::isDirectory($origin_images_path);
+
+        if ($path_existed) {
+            File::deleteDirectory($origin_images_path);
+        }
+
+         // delete folder of resized images
+         $resized_images_path=public_path(). '/assets/posts_images_thumbs/'.$post->slug;
+         $path_existed=File::isDirectory($resized_images_path);
+
+         if ($path_existed) {
+             File::deleteDirectory($resized_images_path);
+         }
+
+        $post_delete=$post->forceDelete();
         if($post_delete){
-            session()->flash('delete','post deleted successfully');
+
+            session()->flash('delete_status','post deleted successfully');
             return redirect('/');
         }
 

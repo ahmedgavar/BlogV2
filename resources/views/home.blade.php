@@ -5,6 +5,7 @@
 
     {{ __('Profile') }}
 </a>
+
 @endsection
 
 {{-- section for show profile in login list --}}
@@ -17,18 +18,33 @@
 
 <link href="{{ asset('css/home-style.css') }}" rel="stylesheet">
 
+
 {{-- show success message when creating post --}}
-@if (session('status'))
+@if (session('create_status'))
     <div class="alert alert-success" id="success_create_update_msg">
-        {{ session('status') }}
-    </div>
-@endif
-@if (session('delete'))
-    <div class="alert alert-danger" id="success_delete_msg">
-        {{ session('delete') }}
+        {{ session('create_status') }}
     </div>
 @endif
 {{-- End show success message when creating post --}}
+
+{{-- show success message when deleting post --}}
+
+
+@if (session('delete_status'))
+    <div class="alert alert-danger" id="success_delete_msg">
+        {{ session('delete_status') }}
+    </div>
+@endif
+{{-- End show success message when deleting post --}}
+
+{{-- show success message when updating post --}}
+@if (session('update_status'))
+    <div class="alert alert-success" id="success_create_update_msg">
+        {{ session('update_status') }}
+    </div>
+@endif
+
+{{-- End show success message when updating post --}}
 
 
 
@@ -201,8 +217,61 @@
                                             <br>
                                         </div>
                                     </div>
+                                {{-- start edit and delete of comment --}}
 
+
+                                    {{-- comment who can edit and delete --}}
+                                    {{-- comment owner can edit and delete --}}
+                                    {{-- post owner which comment belong to can only delete --}}
+
+                                    @auth
+
+                                    @if ($comment->user_id===auth::user()->id)
+                                        <button
+
+                                            class="btn btn-primary btn-sm commentsEdit"
+
+                                            data-post-id="{{$post->id}}"
+                                            data-comment-id="{{ $comment->id }}"
+                                            data-comment="{{$comment->comment}}"
+
+                                            >Edit
+                                        </button>
+                                        <button
+                                            class="btn btn-danger btn-sm deleteBtn crud_action"
+                                            style="margin: 0px;"
+                                            data-bs-toggle="modal"
+
+                                            data-bs-target="#deleteCommentModal"
+                                            data-delete_id="{{$post->id}}"
+
+
+                                            >Delete
+                                        </button>
+
+                                    @elseif ($comment->post->user_id===auth::user()->id )
                                     <span>
+                                        <button
+                                            class="btn btn-danger btn-sm deleteBtn crud_action"
+                                            style="margin: 0px;"
+                                            data-bs-toggle="modal"
+
+                                            data-bs-target="#deleteModal"
+                                            data-delete_id="{{$post->id}}"
+
+
+                                            >Delete
+                                        </button>
+
+
+
+                                    </span>
+
+                                @endif
+                                {{-- end edit and delete buttons of comment --}}
+
+                                @endauth
+
 
 
                                         <like-component
@@ -218,6 +287,32 @@
 
                                         </like-component>
                                   </span>
+                                  {{-- comment edit div --}}
+                                  <div
+                                    class="form_edit"
+                                    id="div_comment_form{{ $post->id }}-{{ $comment->id }}"
+                                    style="display: none">
+
+                                    <form  class="update_comment_form" method="POST"
+                                        data-post-id="{{$post->id}}"
+                                        data-comment-id="{{ $comment->id }}">
+                                        @csrf
+                                        <div style="margin-left: 50px">
+
+                                            <textarea style="text-align: center" name="comment_edit"
+                                                        id="updated_comment{{ $post->id }}-{{ $comment->id }}"
+                                                        cols="60" rows="3"
+                                                        placeholder="update your comment">
+                                            </textarea>
+                                            <button type="submit" id="update_comment_btn{{$post->id}}">save</button>
+                                            <div id="comment_error{{$post->id}}" class="text-danger"></div>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+                                  {{-- end comment edit div --}}
+
                                   @empty
                                   <div class="bg-warning p-4">
                                       No comments yet for this post
@@ -244,7 +339,7 @@
                                         <div style="margin-left: 50px">
 
                                             <textarea style="text-align: center" name="comment" id="comment_input{{ $post->id }}" cols="60" rows="3" placeholder="add your comment"></textarea>
-                                            <button  style="margin: 20px 150px" type="submit" id="add_comment_btn{{$post->id}}">save</button>
+                                            <button type="submit" id="add_comment_btn{{$post->id}}">save</button>
                                             <div id="comment_error{{$post->id}}" class="text-danger"></div>
                                         </div>
 
@@ -292,8 +387,11 @@
 
 @section('modal_js')
 <script src="{{asset('js/modal_data.js')}}"></script>
-<script src="{{asset('js/add_comment.js')}}"></script>
-{{-- <script src="{{asset('js/likes.js')}}"></script> --}}
+<script src="{{asset('js/comment_modal.js')}}"></script>
+
+
+<script src="{{asset('js/comment_actions.js')}}"></script>
+
 
 
 @endsection

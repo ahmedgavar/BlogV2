@@ -1,4 +1,18 @@
 @extends('layouts.app')
+@section('right_list')
+{{-- Home --}}
+<a class="dropdown-item" href="/" ><i class="fa fa-btn fa-user"></i>
+
+    {{ __('Home') }}
+</a>
+
+@endsection
+
+{{-- section for show profile in login list --}}
+@section('list_items')
+<a href="/" class="profile_link"><h4>Home</h4> </a>
+
+@endsection
 @section('content')
 
 
@@ -18,8 +32,7 @@
             <h3 style="margin:20px 50px">Images</h3>
 
             @forelse ( $post->post_Images as $images )
-                <img src="{{asset('assets/posts_images/'. $images->image_name)}} " alt=" no images"  height="200px" style="margin:20px 0px 10px 70px">
-
+                <img src="{{asset('assets/posts_images/'. $images->image_path.'/'.$images->image_name.'.'.$images->image_extension)}} " alt=" no images"  height="200px" style="margin:20px 0px 10px 70px">
 
             @empty
             <h3> No images for this post</h3>
@@ -47,7 +60,7 @@
                         <div class="card-body" >
                             {{ $comments->comment }}
                             {{ $comments->id }}
-                            
+
 
                         </div>
 
