@@ -9,10 +9,13 @@ $(document).ready(function() {
         var multiImgPreview = function(input, imgPreviewPlaceholder) {
             if (input.files) {
                 var filesAmount = input.files.length;
+
                 for (i = 0; i < filesAmount; i++) {
                     var reader = new FileReader();
                     reader.onload = function(event) {
+
                         $($.parseHTML('<img>')).attr('src', event.target.result).appendTo(imgPreviewPlaceholder);
+
                     }
                     reader.readAsDataURL(input.files[i]);
                 }
@@ -23,6 +26,8 @@ $(document).ready(function() {
             // call this function for create modal
 
         $('#image_name').on('change', function() {
+            // remove old images not to be shown
+            $('div.imgPreview img').remove();
             multiImgPreview(this, 'div.imgPreview');
             // End call this function for create modal
 
@@ -30,6 +35,8 @@ $(document).ready(function() {
             //  call this function for edit modal
 
         $('#images_edit').on('change', function() {
+            $('div.imgEditPreview img').remove();
+
             multiImgPreview(this, 'div.imgEditPreview');
             // End call this function for edit modal
 
@@ -39,7 +46,7 @@ $(document).ready(function() {
 
 // End first task change picture show
 
-
+    // delete post
     $('#deleteModal').on('show.bs.modal',function(event){
         $('#editPostModal').hide();
         $('#createPostModal').hide();
@@ -56,6 +63,25 @@ $(document).ready(function() {
 
 
         } );
+
+        // delete comment
+        $('#deleteCommentModal').on('show.bs.modal',function(event){
+
+
+            $(this).appendTo("body");
+
+
+
+        var current_button=$(event.relatedTarget);
+        // console.log(current_button);
+
+        var comment_id=current_button.data('delete-com-id');
+
+       $('#delete_comment').val(comment_id);
+
+            } );
+
+        // end delete comment
 
 
     $('#editPostModal').on('show.bs.modal',function(event){

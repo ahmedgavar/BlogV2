@@ -90,7 +90,11 @@
                                 @foreach ($post->post_images as $images )
 
                                     <div class="col">
-                                        <img class="gallery-item" src="{{ asset('assets/posts_images/'.$images->image_name)}}">
+                                        <img class="gallery-item"
+
+                                        src="{{asset('assets/posts_images_thumbs/'. $images->image_path.'/'.$images->image_name.'.'.$images->image_extension)}}">
+
+
                                     </div>
 
                                 @endforeach

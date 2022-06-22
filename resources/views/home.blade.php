@@ -238,26 +238,27 @@
                                             >Edit
                                         </button>
                                         <button
-                                            class="btn btn-danger btn-sm deleteBtn crud_action"
+                                            class="btn btn-danger btn-sm del_comment_btn"
                                             style="margin: 0px;"
                                             data-bs-toggle="modal"
 
                                             data-bs-target="#deleteCommentModal"
-                                            data-delete_id="{{$post->id}}"
+                                            data-delete-com-id="{{$comment->id}}"
 
 
                                             >Delete
                                         </button>
 
+
                                     @elseif ($comment->post->user_id===auth::user()->id )
                                     <span>
                                         <button
-                                            class="btn btn-danger btn-sm deleteBtn crud_action"
+                                            class="btn btn-danger btn-sm  del_comment_btn"
                                             style="margin: 0px;"
                                             data-bs-toggle="modal"
 
-                                            data-bs-target="#deleteModal"
-                                            data-delete_id="{{$post->id}}"
+                                            data-bs-target="#deleteCommentModal"
+                                            data-delete-com-id="{{$comment->id}}"
 
 
                                             >Delete
@@ -369,6 +370,8 @@
 
                 @include('posts.delete')
                 @include('posts.edit')
+                @include('comments.delete')
+
 
             </div>
 

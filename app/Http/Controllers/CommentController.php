@@ -114,8 +114,16 @@ class CommentController extends Controller
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy(Request $request)
     {
         //
+        // $comment=Comment::find($request->delete_comment);
+        $comment=Comment::find( $request->delete_comment);
+        $comment_delete=$comment->forceDelete();
+        if($comment_delete){
+
+            session()->flash('delete_status','comment deleted successfully');
+            return redirect('/');
+        }
     }
 }
